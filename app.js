@@ -16,5 +16,5 @@ app.get('/api/message', (req, res) => {
 })
 
 app.listen(port, () => {
-    console.log('Express API is running on http://localhost:${port}')
+    console.log(`Express API is running on http://localhost:${port}`)
 })
