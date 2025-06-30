@@ -1,8 +1,9 @@
 const express = require('express')
 const cors = require('cors')
+const path = require('path')
 
 const app = express()
-const port = 3000
+const port = process.env.PORT || 3000
 
 const messages = [
   'Hello from the Express API!',
@@ -24,11 +25,14 @@ const messages = [
 app.use(cors())
 app.use(express.json())
 
-app.get('/', (req, res) => {
-    res.send('Hello from your simple Express.js app!')
-})
+const svelteDistPath = path.join(__dirname, '../SvelteFrontendVite/dist')
+app.use(express.static(svelteDistPath))
 
-app.get('/message', (req, res) => {
+// app.get('/', (req, res) => {
+//     res.send('Hello from your simple Express.js app!')
+// })
+
+app.get('/api/message', (req, res) => {
   // Get a random index from the messages array
   const randomIndex = Math.floor(Math.random() * messages.length);
 
@@ -39,6 +43,18 @@ app.get('/message', (req, res) => {
   res.json({ message: randomMessage });
 });
 
+// --- Catch-all for Svelte SPA Routing (IMPORTANT) ---
+// For any request not matching an API route or static file,
+// send back the index.html from the Svelte app.
+// This allows client-side routing in Svelte to work.
+// app.get('*', (req, res) => {
+//     // If the request path already matched a static file (like /index.html, /assets/...),
+//     // express.static would have handled it. This `get('*')` only catches paths that
+//     // *didn't* match an existing file.
+//     res.sendFile(path.join(svelteDistPath, 'index.html'));
+// });
+
 app.listen(port, () => {
-    console.log(`Express API is running on http://localhost:${port}`)
+    console.log(`Express API is running on ${port}`)
+    console.log(`Serving Svelte files from: ${svelteDistPath}`)
 })
